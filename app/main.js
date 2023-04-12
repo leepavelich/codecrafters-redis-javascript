@@ -1,20 +1,18 @@
 const net = require("net");
 
+let DEV_MODE = false;
+
+// comment out this line before submitting
+// DEV_MODE = true;
+
+const PORT = DEV_MODE ? 6380 : 6379;
+
 const server = net.createServer((connection) => {
   console.log("Client connected.");
 
   connection.on("data", (data) => {
-    const [dataType, firstElement, command, ...rest] = data
-      .toString()
-      .trim()
-      .split("\n");
-
-    console.log(command);
-
-    if (command === "ping") {
-      connection.write("+PONG\r\n");
-    }
+    connection.write("+PONG\r\n");
   });
 });
 
-server.listen(6379, "127.0.0.1");
+server.listen(PORT, "127.0.0.1");
