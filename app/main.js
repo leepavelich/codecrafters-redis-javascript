@@ -1,8 +1,20 @@
 const net = require("net");
 
-// Uncomment this block to pass the first stage
 const server = net.createServer((connection) => {
-  // Handle connection
+  console.log("Client connected.");
+
+  connection.on("data", (data) => {
+    const [dataType, firstElement, command, ...rest] = data
+      .toString()
+      .trim()
+      .split("\n");
+
+    console.log(command);
+
+    if (command === "ping") {
+      connection.write("+PONG\r\n");
+    }
+  });
 });
 
-server.listen(6379, "127.0.0.1");
+server.listen(6380, "127.0.0.1");
