@@ -3,7 +3,7 @@ const net = require("net");
 let DEV_MODE = false;
 
 // comment out this line before submitting
-DEV_MODE = true;
+// DEV_MODE = true;
 
 const PORT = DEV_MODE ? 6380 : 6379;
 
