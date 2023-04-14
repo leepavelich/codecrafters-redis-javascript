@@ -12,12 +12,12 @@ const server = net.createServer((connection) => {
 
   connection.on("data", (data) => {
     const request = data.toString().trim().split("\r\n");
-    const command = request[2];
+    const command = request[2].toUpperCase();
     switch (command) {
       case "COMMAND":
         connection.write("$-1\r\n");
         break;
-      case "ping":
+      case "PING":
         connection.write("+PONG\r\n");
         break;
       case "ECHO":
