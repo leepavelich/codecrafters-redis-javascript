@@ -1,57 +1,55 @@
 const net = require("net");
-const { expect } = require("chai");
-const { promisify } = require("util");
-const redisServer = require("../app/main");
+const assert = require("chai").assert;
+const server = require("../app/main");
 
-const sleep = promisify(setTimeout);
+function createRESPCommand(commandArray) {
+  return commandArray.reduce((acc, curr, idx) => {
+    if (idx === 0) {
+      acc = `*${commandArray.length}\r\n`;
+    }
+    acc += `$${curr.length}\r\n${curr}\r\n`;
+    return acc;
+  }, "");
+}
 
-const PORT = process.env.PORT;
+function sendCommand(command, callback) {
+  const client = net.createConnection({ port: process.env.PORT }, () => {
+    client.write(createRESPCommand(command));
+  });
+
+  client.on("data", (data) => {
+    callback(data);
+    client.end();
+  });
+}
 
 describe("Redis Clone", () => {
-  let client;
-
   before((done) => {
-    if (redisServer.listening) {
+    if (server.listening) {
       done();
     } else {
-      redisServer.once("listening", done);
+      server.once("listening", done);
     }
   });
 
-  after((done) => {
-    redisServer.close(done);
-  });
-
-  beforeEach(() => {
-    client = net.createConnection({ port: PORT, host: "127.0.0.1" });
-  });
-
-  afterEach(() => {
-    client.end();
-  });
-
   it("should respond with PONG to PING command", (done) => {
-    client.once("data", (data) => {
-      expect(data.toString()).to.equal("+PONG\r\n");
+    sendCommand(["PING"], (data) => {
+      assert.equal(data.toString(), "+PONG\r\n");
       done();
     });
-    client.write("PING\r\n");
   });
 
   it("should respond with an ECHO of the input", (done) => {
-    const input = "Hello, world!";
-    client.once("data", (data) => {
-      expect(data.toString()).to.equal(`$${input.length}\r\n${input}\r\n`);
+    sendCommand(["ECHO", "hello"], (data) => {
+      assert.equal(data.toString(), "$5\r\nhello\r\n");
       done();
     });
-    client.write(`ECHO ${input}\r\n`);
   });
 
   it("should respond with -1 for COMMAND command", (done) => {
-    client.once("data", (data) => {
-      expect(data.toString()).to.equal("$-1\r\n");
+    sendCommand(["COMMAND", "DOCS"], (data) => {
+      assert.equal(data.toString(), "$-1\r\n");
       done();
     });
-    client.write("COMMAND\r\n");
   });
 });
