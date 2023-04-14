@@ -1,38 +1,48 @@
 const store = {};
 
 const handleCommand = (connection, request) => {
-  const commandLookup = {
-    COMMAND: () => connection.write("$-1\r\n"),
-    PING: () => connection.write("+PONG\r\n"),
-    ECHO: () => {
-      const response = request[4];
-      connection.write(`$${response.length}\r\n${response}\r\n`);
-    },
-    SET: () => {
-      const key = request[4];
-      const value = request[6];
-      store[key] = value;
-      connection.write("+OK\r\n");
-    },
-    GET: () => {
-      const requestKey = request[4];
-      if (requestKey in store) {
-        const response = store[requestKey];
-        connection.write(`$${response.length}\r\n${response}\r\n`);
-      } else {
-        connection.write("$-1\r\n");
-      }
-    },
+  const [, , commandRaw, , arg1, , arg2] = request;
+  const command = commandRaw.toUpperCase();
+
+  const commandHandlers = {
+    COMMAND: () => handleCommandCommand(connection),
+    PING: () => handlePingCommand(connection),
+    ECHO: () => handleEchoCommand(connection, arg1),
+    SET: () => handleSetCommand(connection, arg1, arg2),
+    GET: () => handleGetCommand(connection, arg1),
   };
 
-  const command = request[2].toUpperCase();
-  const commandHandler = commandLookup[command];
+  const commandHandler = commandHandlers[command];
 
-  if (commandHandler) {
+  if (commandHandlers[command]) {
     commandHandler();
   } else {
     connection.write(`-ERR unknown command '${command}'\r\n`);
   }
+};
+
+const handleCommandCommand = (connection) => {
+  connection.write("$-1\r\n");
+};
+
+const handlePingCommand = (connection) => {
+  connection.write("+PONG\r\n");
+};
+
+const handleEchoCommand = (connection, message) => {
+  connection.write(`$${message.length}\r\n${message}\r\n`);
+};
+
+const handleSetCommand = (connection, key, value) => {
+  store[key] = value;
+  connection.write("+OK\r\n");
+};
+
+const handleGetCommand = (connection, key) => {
+  const response = store[key];
+  connection.write(
+    response ? `$${response.length}\r\n${response}\r\n` : "$-1\r\n"
+  );
 };
 
 module.exports = handleCommand;
