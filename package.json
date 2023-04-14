@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "test": "NODE_EV=test mocha --recursive --exit"
+  },
   "dependencies": {
     "dotenv": "^16.0.3"
   },

@@ -1,8 +1,9 @@
 const net = require("net");
-require("dotenv").config();
+const dotenv = require("dotenv");
+const configPath = process.env.NODE_ENV === "test" ? ".env.test" : ".env";
+dotenv.config({ path: configPath });
 
-const DEV_MODE = process.env.NODE_ENV === "development";
-const PORT = DEV_MODE ? 6380 : 6379;
+const PORT = process.env.PORT || 6379;
 
 const server = net.createServer((connection) => {
   console.log("Client connected.");
@@ -26,3 +27,5 @@ const server = net.createServer((connection) => {
 });
 
 server.listen(PORT, "127.0.0.1");
+
+module.exports = server;
