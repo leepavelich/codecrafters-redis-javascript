@@ -3,8 +3,7 @@
     "test": "NODE_EV=test mocha --recursive --exit"
   },
   "dependencies": {
-    "dotenv": "^16.0.3",
-    "resp": "^0.1.1"
+    "dotenv": "^16.0.3"
   },
   "devDependencies": {
     "chai": "^4.3.7",
