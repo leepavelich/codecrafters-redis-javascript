@@ -53,14 +53,14 @@ describe("Redis Clone", () => {
     });
   });
 
-  xit("should store a key-value pair using the SET command", (done) => {
+  it("should store a key-value pair using the SET command", (done) => {
     sendCommand(["SET", "mykey", "myvalue"], (data) => {
       assert.equal(data.toString(), "+OK\r\n");
       done();
     });
   });
 
-  xit("should retrieve a value for a key using the GET command", (done) => {
+  it("should retrieve a value for a key using the GET command", (done) => {
     // First, set a key-value pair to ensure the value exists in the store
     sendCommand(["SET", "mykey", "myvalue"], (setData) => {
       assert.equal(setData.toString(), "+OK\r\n");
@@ -73,7 +73,7 @@ describe("Redis Clone", () => {
     });
   });
 
-  xit("should return a nil response for a non-existent key using the GET command", (done) => {
+  it("should return a nil response for a non-existent key using the GET command", (done) => {
     sendCommand(["GET", "nonexistentkey"], (data) => {
       assert.equal(data.toString(), "$-1\r\n");
       done();
