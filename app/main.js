@@ -1,10 +1,7 @@
 const net = require("net");
+require("dotenv").config();
 
-let DEV_MODE = false;
-
-// comment out this line before submitting
-// DEV_MODE = true;
-
+const DEV_MODE = process.env.NODE_ENV === "development";
 const PORT = DEV_MODE ? 6380 : 6379;
 
 const server = net.createServer((connection) => {
