@@ -1,6 +1,9 @@
 const store = {};
 
-const handleCommand = (connection, [, , respCommand, , key, , value]) => {
+const handleCommand = (
+  connection,
+  [, , respCommand, , key, , value, flag, expireTime]
+) => {
   const command = respCommand.toUpperCase();
   const sendResponse = (response) => connection.write(`${response}\r\n`);
   const sendNullResponse = () => sendResponse("$-1");
