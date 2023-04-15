@@ -26,11 +26,8 @@ function sendCommand(command, callback) {
 
 describe("Redis Clone", () => {
   before((done) => {
-    if (server.listening) {
-      done();
-    } else {
-      server.once("listening", done);
-    }
+    if (server.listening) done();
+    else server.once("listening", done);
   });
 
   it("should return a null response for an unknown command", (done) => {
