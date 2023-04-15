@@ -81,7 +81,7 @@ describe("Redis Clone", () => {
     });
   });
 
-  xit("should set an expiry for a key using the EXPIRE command", (done) => {
+  it("should set an expiry for a key using the EXPIRE command", (done) => {
     // Use sinon's fake timer
     const clock = sinon.useFakeTimers();
 
@@ -104,6 +104,14 @@ describe("Redis Clone", () => {
           done();
         });
       });
+    });
+  });
+
+  it("should return 0 when EXPIRE is called for a key that's not in the store", (done) => {
+    // Try to set the expiry time using the EXPIRE command for a non-existent key
+    sendCommand(["EXPIRE", "nonExistentKey", "1"], (expireData) => {
+      assert.equal(expireData.toString(), ":0\r\n");
+      done();
     });
   });
 });
