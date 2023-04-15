@@ -20,8 +20,7 @@ const handleCommand = (connection, request) => {
     EXPIRE: () => {
       if (key in store) {
         sendResponse(":1");
-        setTimeout(() => delete store[key], value * 1000);
-        return;
+        return setTimeout(() => delete store[key], value * 1000);
       }
       sendResponse(":0");
     },
