@@ -1,6 +1,8 @@
 const net = require("net");
-const { PORT, ENV } = require("./config");
 const handleCommand = require("./commands");
+
+const ENV = process.env.NODE_ENV || "production";
+const PORT = process.env.PORT || 6379;
 
 const parseResp = (data) => data.toString().split(/[\r\n]+/);
 

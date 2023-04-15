@@ -2,7 +2,8 @@ const net = require("net");
 const assert = require("chai").assert;
 const sinon = require("sinon");
 const server = require("../app/main");
-const { PORT } = require("../app/config");
+
+const PORT = process.env.PORT;
 
 function createRESPCommand(commandArray) {
   return commandArray.reduce((acc, curr, idx) => {

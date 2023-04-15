@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "test": "NODE_ENV=test mocha --recursive --exit"
+    "start": "NODE_ENV=development PORT=6380 ./spawn_redis_server.sh",
+    "test": "NODE_ENV=test PORT=6380 mocha --recursive --exit"
   },
   "devDependencies": {
     "chai": "^4.3.7",
