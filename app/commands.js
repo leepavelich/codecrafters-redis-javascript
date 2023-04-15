@@ -1,7 +1,7 @@
 const store = {};
 
-const handleCommand = (connection, request) => {
-  const [, , respCommand, , key, , value] = request;
+const handleCommand = (connection, [, , respCommand, , key, , value]) => {
+  const command = respCommand.toUpperCase();
   const sendResponse = (response) => connection.write(`${response}\r\n`);
   const sendNullResponse = () => sendResponse("$-1");
 
@@ -26,9 +26,8 @@ const handleCommand = (connection, request) => {
     },
   };
 
-  const command = respCommand.toUpperCase();
-
-  return (commandHandlers[command] || sendNullResponse)();
+  const defaultHandler = () => sendNullResponse();
+  return (commandHandlers[command] || defaultHandler)();
 };
 
 module.exports = handleCommand;
