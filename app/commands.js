@@ -2,7 +2,7 @@ const store = {};
 
 const handleCommand = (
   connection,
-  [, , respCommand, , key, , value, flag, expireTime]
+  [, , respCommand, , key, , value, , flag, , expireTime]
 ) => {
   const command = respCommand.toUpperCase();
   const sendResponse = (response) => connection.write(`${response}\r\n`);
@@ -15,6 +15,10 @@ const handleCommand = (
     SET: () => {
       store[key] = value;
       sendResponse("+OK");
+
+      if (flag && flag.toUpperCase() === "PX") {
+        setTimeout(() => delete store[key], expireTime);
+      }
     },
     GET: () => {
       const response = store[key];
