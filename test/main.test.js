@@ -33,6 +33,13 @@ describe("Redis Clone", () => {
     }
   });
 
+  it("should return a null response for an unknown command", (done) => {
+    sendCommand(["UNSUPPORTED_COMMAND", "someKey", "someValue"], (response) => {
+      assert.equal(response.toString(), "$-1\r\n");
+      done();
+    });
+  });
+
   it("should respond with PONG to PING command", (done) => {
     sendCommand(["PING"], (data) => {
       assert.equal(data.toString(), "+PONG\r\n");
