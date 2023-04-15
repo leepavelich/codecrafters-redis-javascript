@@ -1,8 +1,15 @@
-const dotenv = require("dotenv");
-const configPath = process.env.NODE_ENV === "test" ? ".env.test" : ".env";
-dotenv.config({ path: configPath });
+const fs = require("fs");
+
+const config = JSON.parse(
+  fs.readFileSync(
+    `./config.${process.env.NODE_ENV || "production"}.json`,
+    "utf-8"
+  )
+);
+
+console.log(config);
 
 module.exports = {
-  PORT: process.env.PORT || 6379,
+  PORT: config.PORT || 6379,
   ENV: process.env.NODE_ENV || "production",
 };

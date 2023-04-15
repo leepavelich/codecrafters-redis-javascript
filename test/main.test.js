@@ -2,6 +2,7 @@ const net = require("net");
 const assert = require("chai").assert;
 const sinon = require("sinon");
 const server = require("../app/main");
+const { PORT } = require("../app/config");
 
 function createRESPCommand(commandArray) {
   return commandArray.reduce((acc, curr, idx) => {
@@ -14,7 +15,7 @@ function createRESPCommand(commandArray) {
 }
 
 function sendCommand(command, callback) {
-  const client = net.createConnection({ port: process.env.PORT }, () => {
+  const client = net.createConnection({ port: PORT }, () => {
     client.write(createRESPCommand(command));
   });
 
