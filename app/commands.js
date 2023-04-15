@@ -17,6 +17,14 @@ const handleCommand = (connection, request) => {
       const response = store[key];
       sendResponse(response ? `$${response.length}\r\n${response}` : "$-1");
     },
+    EXPIRE: () => {
+      if (key in store) {
+        sendResponse(":1");
+        setTimeout(() => delete store[key], value * 1000);
+        return;
+      }
+      sendResponse(":0");
+    },
   };
 
   const command = respCommand.toUpperCase();
