@@ -1,5 +1,6 @@
 const net = require("net");
 const assert = require("chai").assert;
+const sinon = require("sinon");
 const server = require("../app/main");
 
 function createRESPCommand(commandArray) {
@@ -77,6 +78,32 @@ describe("Redis Clone", () => {
     sendCommand(["GET", "nonexistentkey"], (data) => {
       assert.equal(data.toString(), "$-1\r\n");
       done();
+    });
+  });
+
+  xit("should set an expiry for a key using the EXPIRE command", (done) => {
+    // Use sinon's fake timer
+    const clock = sinon.useFakeTimers();
+
+    // First, set a key-value pair to ensure the value exists in the store
+    sendCommand(["SET", "expiringKey", "expiringValue"], (setData) => {
+      assert.equal(setData.toString(), "+OK\r\n");
+
+      // Then, try to set the expiry time using the EXPIRE command
+      sendCommand(["EXPIRE", "expiringKey", "1"], (expireData) => {
+        assert.equal(expireData.toString(), ":1\r\n");
+
+        // Advance the fake timer by 1.5 seconds
+        clock.tick(1500);
+
+        // Then, try to retrieve the value using the GET command, expecting a nil response
+        sendCommand(["GET", "expiringKey"], (getData) => {
+          assert.equal(getData.toString(), "$-1\r\n");
+          // Restore the original timers
+          clock.restore();
+          done();
+        });
+      });
     });
   });
 });
