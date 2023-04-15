@@ -26,6 +26,8 @@ function sendCommand(command, callback) {
   });
 }
 
+const clock = sinon.useFakeTimers();
+
 describe("Redis Clone", () => {
   before((done) => {
     if (server.listening) done();
@@ -87,10 +89,28 @@ describe("Redis Clone", () => {
     });
   });
 
-  it("should set an expiry for a key using the EXPIRE command", (done) => {
-    // Use sinon's fake timer
-    const clock = sinon.useFakeTimers();
+  it("should set a key-value pair with an expiry using the SET command and the PX flag", (done) => {
+    // Set a key-value pair with the PX flag and an expiration time of 1000 milliseconds (1 second)
+    sendCommand(
+      ["SET", "expiringKey", "expiringValue", "PX", "1000"],
+      (setData) => {
+        assert.equal(setData.toString(), "+OK\r\n");
 
+        // Advance the fake timer by 1.5 seconds
+        clock.tick(1500);
+
+        // Then, try to retrieve the value using the GET command, expecting a nil response
+        sendCommand(["GET", "expiringKey"], (getData) => {
+          assert.equal(getData.toString(), "$-1\r\n");
+          // Restore the original timers
+          clock.restore();
+          done();
+        });
+      }
+    );
+  });
+
+  it("should set an expiry for a key using the EXPIRE command", (done) => {
     // First, set a key-value pair to ensure the value exists in the store
     sendCommand(["SET", "expiringKey", "expiringValue"], (setData) => {
       assert.equal(setData.toString(), "+OK\r\n");
