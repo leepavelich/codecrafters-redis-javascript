@@ -1,9 +1,9 @@
 const net = require("net");
-const { PORT } = require("./config");
+const { PORT, ENV } = require("./config");
 const handleCommand = require("./commands");
 
 const server = net.createServer((connection) => {
-  console.log("Client connected.");
+  if (ENV !== "test") console.log("Client connected.");
 
   connection.on("data", (data) =>
     handleCommand(connection, data.toString().split(/[\r\n]+/))
